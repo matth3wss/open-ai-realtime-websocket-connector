@@ -42,8 +42,7 @@ function startAudioCapture(ws) {
           ws.send(outputData.buffer);
         }
       };
-      isRecording = true;
-      recordButton.textContent = "Stop Recording";
+
     })
     .catch((error) => {
       console.error("getUserMedia error:", error);
@@ -53,12 +52,27 @@ function startAudioCapture(ws) {
 
 async function startRecording() {
   try {
-    const apiUrl = process.env['WEBSOCKET_API']
-    webSocket = new WebSocket(`${apiUrl}/chat123`);
+    const inputUrl = document.querySelector("#wsUrl")?.value
+    // const authorization = document.querySelector("#authToken")?.value
+    const authorization = ''
+    webSocket = new WebSocket(`${inputUrl}?language=en-US`);
+    isRecording = true;
+    recordButton.textContent = "Stop Recording";
+    webSocket.onopen = async () => {
+      const prompt = document.querySelector("#llmPrompt").value
+      msgPrompt = { type: "prompt", value: prompt }
+      webSocket.send(JSON.stringify(msgPrompt));
 
-    webSocket.onopen = () => console.log("WebSocket connection established");
-    webSocket.onerror = (error) => console.error("WebSocket error:", error);
-    webSocket.onclose = () => console.log("WebSocket connection closed");
+      startAudioCapture(webSocket);
+    };
+    webSocket.onerror = (error) => {
+      stopRecording();
+      console.error("WebSocket error:", error)
+    };
+    webSocket.onclose = () => {
+      stopRecording();
+      console.log("WebSocket connection closed")
+    };
 
     webSocket.onmessage = async (event) => {
       if (event.data instanceof Blob) {
@@ -88,25 +102,6 @@ async function startRecording() {
         console.log(event.data);
       }
     };
-
-    await startAudioCapture(webSocket);
-
-    // Get user's audio stream
-    // Initialize MediaRecorder
-    //   mediaRecorder = new Recorder((event) => {
-    //     if (
-    //       webSocket.readyState === WebSocket.OPEN &&
-    //       event.data.buffer?.byteLength > 0
-    //     ) {
-    //       chunk = processAudioRecordingBuffer(event.data.buffer);
-    //       if (chunk) webSocket.send(chunk);
-    //     }
-    //   });
-    //   // mediaRecorder.ondataavailable =
-    //   audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    //   mediaRecorder.start(audioStream); // Sends audio in chunks of 100ms
-    //   isRecording = true;
-    //   recordButton.textContent = "Stop Recording";
   } catch (error) {
     console.error("Error starting recording:", error);
   }
@@ -172,7 +167,13 @@ function playNextBuffer() {
   source.start();
 }
 
-recordButton.addEventListener("click", () => {
+/**
+ * 
+ * @param {SubmitEvent} ev 
+ * @returns 
+ */
+function submit(ev) {
+  ev.preventDefault()  // to stop the form submitting
   if (isRecording) {
     stopRecording();
   } else {
@@ -186,7 +187,10 @@ recordButton.addEventListener("click", () => {
     audioContextIn.resume();
   }
   nextBufferTime = audioContextOut.currentTime;
-});
+  return false;
+};
+
+document.querySelector('form').onsubmit = submit;
 
 let recordingActive = false;
 let buffer = new Uint8Array();
