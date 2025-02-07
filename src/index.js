@@ -5,11 +5,17 @@ let mediaRecorder;
 let webSocket;
 let audioContext;
 let source;
+/**
+ * Audio buffer queue
+ * @type {Int16Array[]}
+ */
 let audioBufferQueue = [];
 
 let audioContextIn;
 let audioContextOut;
 let nextBufferTime = 0;
+
+let fullAudio = [];
 
 function convertFloat32ToInt16(sample) {
   return Math.max(-32768, Math.min(32767, sample * 32767));
@@ -53,15 +59,15 @@ function startAudioCapture(ws) {
 async function startRecording() {
   try {
     const inputUrl = document.querySelector("#wsUrl")?.value
+    const inputLanguage = document.querySelector("#language")?.value
     // const authorization = document.querySelector("#authToken")?.value
     const authorization = ''
-    webSocket = new WebSocket(`${inputUrl}?language=en-US`);
+    webSocket = new WebSocket(`${inputUrl}?language=${inputLanguage}`);
     isRecording = true;
     recordButton.textContent = "Stop Recording";
     webSocket.onopen = async () => {
-      const prompt = document.querySelector("#llmPrompt").value
-      msgPrompt = { type: "prompt", value: prompt }
-      webSocket.send(JSON.stringify(msgPrompt));
+      msg = { type: "choose_sale_chat_type", value: '' }
+      webSocket.send(JSON.stringify(msg));
 
       startAudioCapture(webSocket);
     };
