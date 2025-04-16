@@ -1,3 +1,175 @@
 body {
-  font-family: sans-serif;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(120deg, #74ebd5, #9face6);
+}
+
+.container {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px 30px;
+  width: 400px;
+  max-width: 90%;
+  text-align: center;
+}
+
+.container h1 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  font-size: 14px;
+  color: #555;
+  display: block;
+  margin-bottom: 5px;
+  text-align: left;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.form-group textarea {
+  resize: none;
+  height: 100px;
+}
+
+.submit-btn {
+  background-color: #6c63ff;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.submit-btn:hover {
+  background-color: #574bff;
+}
+
+.submit-btn+.submit-btn {
+  margin-top: 10px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 20px;
+  margin-left: auto;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 20px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked+.slider {
+  background-color: #6c63ff;
+}
+
+input:checked+.slider:before {
+  transform: translateX(14px);
+}
+
+.form-group.flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.form-group.flex label {
+  margin-right: 10px;
+}
+
+.form-group.flex select {
+  flex-grow: 1;
+}
+
+.endpoint-label {
+  font-size: 14px;
+  font-weight: bold;
+  margin-left: 10px;
+  display: inline-block;
+  vertical-align: middle;
+  color: #333;
+}
+
+.flex {
+  align-items: center;
+}
+
+.endpoint-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.endpoint-text {
+  font-size: 14px;
+  color: #333;
+}
+
+.endpoint-text span {
+  font-weight: bold;
+}
+
+#usernameContainer {
+  display: block;
+  /* Always visible */
+}
+
+#messageInputContainer {
+  display: none;
+}
+
+#sendMessageButton {
+  display: none;
 }

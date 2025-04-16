@@ -56,28 +56,52 @@ function startAudioCapture(ws) {
   // Initialize WebSocket
 }
 
+let isRecordingWebSocket = false; // Flag to track if WebSocket is for recording
+
 async function startRecording() {
   try {
-    const inputUrl = document.querySelector("#wsUrl")?.value
-    const inputLanguage = document.querySelector("#language")?.value
-    // const authorization = document.querySelector("#authToken")?.value
-    const authorization = ''
-    webSocket = new WebSocket(`${inputUrl}?language=${inputLanguage}`);
+    const inputUrl = document.querySelector("#wsUrl")?.value;
+    const inputLanguage = document.querySelector("#language")?.value;
+    const useRealtime = document.querySelector("#useRealtime")?.checked; // Check the toggle
+    const channel = document.querySelector("#username")?.value; // Use username as channel
+    const authorization = "Bearer your-token-here"; // Replace with your actual token or leave empty if not required
+
+    let baseUrl = inputUrl.trim();
+    if (baseUrl.endsWith('/')) {
+      baseUrl = baseUrl.slice(0, -1);
+    }
+
+    const fullWsUrl = useRealtime
+      ? `${baseUrl.replace(/^http/, 'ws')}/realtime/${channel}`
+      : `${baseUrl.replace(/^http/, 'ws')}/ws/chat/${channel}?language=${inputLanguage}`; // Adjusted for normal endpoint
+    console.log("Connecting to WebSocket URL:", fullWsUrl);
+
+    webSocket = new WebSocket(fullWsUrl);
+    isRecordingWebSocket = true; // Mark WebSocket as used for recording
+
     isRecording = true;
     recordButton.textContent = "Stop Recording";
+
     webSocket.onopen = async () => {
-      msg = { type: "choose_sale_chat_type", value: '' }
+      const msg = { type: "choose_sale_chat_type", value: '' };
       webSocket.send(JSON.stringify(msg));
+
+      if (!audioContextOut) {
+        audioContextOut = new AudioContext({ sampleRate: 24000 });
+        nextBufferTime = audioContextOut.currentTime;
+      }
 
       startAudioCapture(webSocket);
     };
+
     webSocket.onerror = (error) => {
       stopRecording();
-      console.error("WebSocket error:", error)
+      console.error("WebSocket error:", error);
     };
+
     webSocket.onclose = () => {
       stopRecording();
-      console.log("WebSocket connection closed")
+      console.log("WebSocket connection closed");
     };
 
     webSocket.onmessage = async (event) => {
@@ -86,9 +110,6 @@ async function startRecording() {
         reader.onload = async () => {
           const arrayBuffer = reader.result;
           const audioData = new Int16Array(arrayBuffer);
-
-          // Update the latest buffer size
-          latestBufferSize = audioData.byteLength;
 
           if (audioData.length > 0) {
             try {
@@ -102,10 +123,26 @@ async function startRecording() {
             console.log("Received empty audio data after conversion");
           }
         };
-
         reader.readAsArrayBuffer(event.data);
-      } else {
-        console.log(event.data);
+      } else if (typeof event.data === "string") {
+        try {
+          const parsedData = JSON.parse(event.data);
+          if (parsedData.type === "audio_response" && parsedData.audio) {
+            const audioBuffer = Uint8Array.from(atob(parsedData.audio), (c) =>
+              c.charCodeAt(0)
+            );
+            const int16Array = new Int16Array(
+              audioBuffer.buffer,
+              audioBuffer.byteOffset,
+              audioBuffer.byteLength / Int16Array.BYTES_PER_ELEMENT
+            );
+            await playAudio(int16Array);
+          } else {
+            console.log("Received non-audio message:", parsedData);
+          }
+        } catch (error) {
+          console.error("Error processing WebSocket message:", error);
+        }
       }
     };
   } catch (error) {
@@ -116,10 +153,23 @@ async function startRecording() {
 function stopRecording() {
   if (mediaRecorder) mediaRecorder.stop();
   if (audioStream) audioStream.getTracks().forEach((track) => track.stop());
-  if (webSocket) {
+  if (webSocket && isRecordingWebSocket) {
     console.log("Closing web socket");
-    webSocket.close();
+    webSocket.close(); // Only close if it was used for recording
+    isRecordingWebSocket = false; // Reset the flag
   }
+
+  // Stop any ongoing audio playback
+  if (audioContextOut) {
+    audioContextOut.close().then(() => {
+      audioContextOut = null; // Reset the audio context
+      nextBufferTime = 0; // Reset the buffer time
+    });
+  }
+
+  // Clear the audio buffer queue
+  audioBufferQueue = [];
+
   isRecording = false;
   recordButton.textContent = "Start Recording";
 }
@@ -174,9 +224,9 @@ function playNextBuffer() {
 }
 
 /**
- * 
- * @param {SubmitEvent} ev 
- * @returns 
+ *
+ * @param {SubmitEvent} ev
+ * @returns
  */
 function submit(ev) {
   ev.preventDefault()  // to stop the form submitting
@@ -220,3 +270,25 @@ function processAudioRecordingBuffer(data) {
     return base64;
   }
 }
+
+function toggleEndpointLabel(reload = false) {
+  const checkbox = document.getElementById('useRealtime');
+  const label = document.getElementById('endpointLabel');
+  const messageInputContainer = document.getElementById('messageInputContainer');
+  const sendMessageButton = document.getElementById('sendMessageButton');
+
+  label.textContent = checkbox.checked ? 'Realtime' : 'Normal';
+  messageInputContainer.style.display = checkbox.checked ? 'block' : 'none';
+  sendMessageButton.style.display = checkbox.checked ? 'block' : 'none';
+
+  // Reload the recording state if required
+  if (reload && isRecording) {
+    stopRecording();
+    startRecording();
+  }
+}
+
+// Ensure correct visibility of username input and send message button on page load
+document.addEventListener('DOMContentLoaded', () => {
+  toggleEndpointLabel();
+});
