@@ -4,8 +4,8 @@
   "description": "The JavaScript template",
   "homepage": "https://evandro18.github.io/websocket-chat-stream-demo/",
   "scripts": {
-    "start": "parcel ./src/index.html",
-    "build": "parcel build ./src/index.html",
+    "start": "npx parcel ./src/index.html --host 0.0.0.0 --port 1234",
+    "build": "npx parcel build ./src/index.html",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   },

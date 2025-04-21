@@ -1,0 +1,15 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: open-ai-realtime-websocket-connector:latest
+    container_name: open-ai-realtime-websocket-connector
+    ports:
+      # - "3000:1234"  # Try to use port 3000
+      - "32770:1234"     # Fallback to a wildcard if 3000 is unavailable
+    volumes:
+      - ./src:/app/src
+    environment:
+      - NODE_ENV=development
+    restart: on-failure
