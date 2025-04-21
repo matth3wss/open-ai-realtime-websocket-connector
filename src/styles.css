@@ -38,7 +38,15 @@ body {
 }
 
 .form-group input,
-.form-group textarea,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
 .form-group select {
   width: 100%;
   padding: 10px;
@@ -53,24 +61,42 @@ body {
   height: 100px;
 }
 
-.submit-btn {
-  background-color: #6c63ff;
-  color: #fff;
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  width: 100%;
+.form-group.flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.submit-btn:hover {
-  background-color: #574bff;
+.form-group.flex label {
+  margin-right: 10px;
 }
 
-.submit-btn+.submit-btn {
-  margin-top: 10px;
+.form-group.flex select {
+  flex-grow: 1;
+}
+
+.endpoint-label {
+  font-size: 14px;
+  font-weight: bold;
+  margin-left: 10px;
+  display: inline-block;
+  vertical-align: middle;
+  color: #333;
+}
+
+.endpoint-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.endpoint-text {
+  font-size: 14px;
+  color: #333;
+}
+
+.endpoint-text span {
+  font-weight: bold;
 }
 
 .switch {
@@ -119,57 +145,18 @@ input:checked+.slider:before {
   transform: translateX(14px);
 }
 
-.form-group.flex {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.submit-btn {
+  background-color: #6c63ff;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
 }
 
-.form-group.flex label {
-  margin-right: 10px;
-}
-
-.form-group.flex select {
-  flex-grow: 1;
-}
-
-.endpoint-label {
-  font-size: 14px;
-  font-weight: bold;
-  margin-left: 10px;
-  display: inline-block;
-  vertical-align: middle;
-  color: #333;
-}
-
-.flex {
-  align-items: center;
-}
-
-.endpoint-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.endpoint-text {
-  font-size: 14px;
-  color: #333;
-}
-
-.endpoint-text span {
-  font-weight: bold;
-}
-
-#usernameContainer {
-  display: block;
-  /* Always visible */
-}
-
-#messageInputContainer {
-  display: none;
-}
-
-#sendMessageButton {
-  display: none;
+.submit-btn:hover {
+  background-color: #574bff;
 }

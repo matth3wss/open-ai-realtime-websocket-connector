@@ -1,52 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hypersellers</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Audio Stream</title>
-  <link rel="stylesheet" href="./styles.css">
-</head>
-
-<body>
-  <!-- <h1>Audio Stream with WebSocket</h1> -->
-  <div class="container">
-    <h1>Interface WebSocket LLM</h1>
-    <form id="wsForm">
-      <div class="form-group flex">
-        <label for="language">Idioma:</label>
-        <select name="example" id="language" required>
-          <option value="en-US">Inglês</option>
-          <option value="pt-BR" selected>Português</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <div class="endpoint-container">
-          <span class="endpoint-text">Usando o endpoint <span id="endpointLabel">Normal</span></span>
-          <label class="switch">
-            <input type="checkbox" id="useRealtime" onchange="toggleEndpointLabel(true)">
-            <span class="slider round"></span>
-          </label>
+  <body>
+    <div class="container">
+      <h1>Interface WebSocket LLM</h1>
+      <form id="wsForm">
+        <div class="form-group flex">
+          <label for="wsUrl">Idioma:</label>
+          <select name="example" id="language" required>
+            <option value="en-US">English</option>
+            <option value="pt-BR" selected>Português</option>
+          </select>
         </div>
-      </div>
-      <div class="form-group">
-        <label for="wsUrl">URL do WebSocket:</label>
-        <input type="url" id="wsUrl" placeholder="wss://exemplo.com/socket" value="http://localhost:8080" required>
-      </div>
-      <div id="usernameContainer" class="form-group">
-        <label for="username">Nome de Usuário:</label>
-        <input type="text" id="username" placeholder="Digite seu nome" value="admin" required>
-      </div>
-      <div class="form-group" id="messageInputContainer">
-        <label for="messageInput">Enviar Mensagem:</label>
-        <input type="text" id="messageInput" placeholder="Digite sua mensagem aqui..." disabled />
-        <small>Enviar mensagem de texto ainda não está implementado.</small>
-      </div>
-      <button id="sendMessageButton" class="submit-btn" disabled>Enviar Mensagem</button>
-      <button id="recordButton" type="submit" onsubmit="submit(event)" class="submit-btn">Iniciar Gravação</button>
-    </form>
-  </div>
-  <script src="./index.js" type="text/javascript"></script>
-</body>
+        <div class="form-group">
+          <div class="endpoint-container">
+            <span class="endpoint-text">
+              Usando o endpoint <span id="endpointLabel">Localhost</span>
+            </span>
+            <label class="switch">
+              <input
+                type="checkbox"
+                id="useRealtime"
+                onchange="toggleEndpointLabel(true)"
+              />
+              <span class="slider round"></span>
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="wsUrl">WebSocket URL:</label>
+          <input
+            type="url"
+            id="wsUrl"
+            placeholder="wss://example.com/socket"
+            value="https://localhost:8080"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input
+            type="email"
+            id="email"
+            placeholder="Enter your email"
+            value="admin@admin.com"
+            required
+          />
+        </div>
+        <button
+          id="recordButton"
+          type="submit"
+          onsubmit="submit(event)"
+          class="submit-btn"
+        >
+          Start Recording
+        </button>
+      </form>
+    </div>
 
+    <script src="./index.js" type="text/javascript"></script>
+  </body>
 </html>
